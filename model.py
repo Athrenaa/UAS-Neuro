@@ -1,28 +1,56 @@
-import os
-import joblib
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
+# from sklearn.svm import SVC
+
+# def build_model():
+#     print("[Model] Training SVM classifier")
+#     return SVC(
+#         kernel="rbf",
+#         C=1.0,
+#         gamma="scale",
+#         probability=True
+#     )
+
+# from sklearn.svm import SVC
+# import joblib
+# import os
+
+# MODEL_PATH = "result/svm_eeg_model.joblib"
+
+# def build_model():
+#     print("[Model] Building SVM classifier")
+#     return SVC(
+#         kernel="rbf",
+#         C=1.0,
+#         gamma="scale",
+#         probability=True
+#     )
+
+# def save_model(model):
+#     os.makedirs("result", exist_ok=True)
+#     joblib.dump(model, MODEL_PATH)
+#     print(f"[Model] Model saved to {MODEL_PATH}")
+
+# def load_model():
+#     print(f"[Model] Loading model from {MODEL_PATH}")
+#     return joblib.load(MODEL_PATH)
+
+# from sklearn.svm import SVC
+
+# def build_model():
+#     print("[Model] Training SVM classifier")
+#     return SVC(
+#         kernel="rbf",
+#         C=1.0,
+#         gamma="scale",
+#         probability=True
+#     )
+# model.py
+
 from sklearn.svm import SVC
 
-MODEL_DIR = "result/models"
-
-def build_svm_linear():
-    return Pipeline([
-        ("scaler", StandardScaler()),
-        ("svm", SVC(
-            kernel="linear",
-            C=1.0,
-            probability=True,
-            class_weight="balanced",
-            random_state=42
-        ))
-    ])
-
-def train_and_save(model, X, y, name):
-    os.makedirs(MODEL_DIR, exist_ok=True)
-    model.fit(X, y)
-    joblib.dump(model, f"{MODEL_DIR}/{name}.pkl")
-    print(f"Model saved: {MODEL_DIR}/{name}.pkl")
-
-def load_model(name):
-    return joblib.load(f"{MODEL_DIR}/{name}.pkl")
+def build_svm():
+    return SVC(
+        kernel="linear",
+        C=1.0,
+        probability=True,
+        random_state=42
+    )
