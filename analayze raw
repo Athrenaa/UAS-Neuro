@@ -1,0 +1,306 @@
+# # import os
+# # import numpy as np
+# # import pandas as pd
+# # import librosa
+
+# # from config import TRAIN_DIR, SAMPLE_RATE, N_MFCC
+# # from logger import log
+
+
+# # def analyze_class(folder_path):
+# #     durations = []
+# #     rms_vals = []
+# #     zcr_vals = []
+# #     centroid_vals = []
+# #     mfcc_vals = []
+
+# #     for file in os.listdir(folder_path):
+# #         if not file.endswith(".wav"):
+# #             continue
+
+# #         path = os.path.join(folder_path, file)
+
+# #         # Load audio
+# #         y, sr = librosa.load(path, sr=SAMPLE_RATE)
+
+# #         # 1. Durasi
+# #         duration = len(y) / sr
+# #         durations.append(duration)
+
+# #         # 2. RMS Energy
+# #         rms = np.mean(librosa.feature.rms(y=y))
+# #         rms_vals.append(rms)
+
+# #         # 3. Zero Crossing Rate
+# #         zcr = np.mean(librosa.feature.zero_crossing_rate(y))
+# #         zcr_vals.append(zcr)
+
+# #         # 4. Spectral Centroid
+# #         centroid = np.mean(librosa.feature.spectral_centroid(y=y, sr=sr))
+# #         centroid_vals.append(centroid)
+
+# #         # 5. MFCC
+# #         mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=N_MFCC)
+# #         mfcc_mean = np.mean(mfcc, axis=1)  # mean per coefficient
+# #         mfcc_vals.append(mfcc_mean)
+
+# #     return {
+# #         "duration_mean": np.mean(durations),
+# #         "rms_mean": np.mean(rms_vals),
+# #         "zcr_mean": np.mean(zcr_vals),
+# #         "centroid_mean": np.mean(centroid_vals),
+# #         "mfcc_mean": np.mean(mfcc_vals, axis=0)
+# #     }
+
+
+# # def main():
+# #     log("=== ANALISIS KARAKTERISTIK RATA-RATA DATASET RAW ===")
+
+# #     results = []
+
+# #     for class_name in os.listdir(TRAIN_DIR):
+# #         class_path = os.path.join(TRAIN_DIR, class_name)
+
+# #         if not os.path.isdir(class_path):
+# #             continue
+
+# #         log(f"Menganalisis kelas: {class_name}")
+# #         stats = analyze_class(class_path)
+
+# #         row = {
+# #             "Class": class_name,
+# #             "Duration_mean (s)": stats["duration_mean"],
+# #             "RMS_mean": stats["rms_mean"],
+# #             "ZCR_mean": stats["zcr_mean"],
+# #             "SpectralCentroid_mean": stats["centroid_mean"]
+# #         }
+
+# #         # Tambahkan MFCC mean (MFCC1, MFCC2, ...)
+# #         for i, val in enumerate(stats["mfcc_mean"], start=1):
+# #             row[f"MFCC{i}_mean"] = val
+
+# #         results.append(row)
+
+# #     df = pd.DataFrame(results)
+
+# #     print("\n=== KARAKTERISTIK RATA-RATA SETIAP KELAS (RAW) ===")
+# #     print(df)
+
+# #     os.makedirs("results", exist_ok=True)
+# #     df.to_csv("results/raw_characteristics_summary.csv", index=False)
+
+# #     log("Analisis selesai! Hasil disimpan di results/raw_characteristics_summary.csv")
+
+
+# # if __name__ == "__main__":
+# #     main()
+   
+# # # import os
+# # # import numpy as np
+# # # import pandas as pd
+# # # import librosa
+
+# # # from config import TRAIN_DIR, SAMPLE_RATE
+# # # from logger import log
+
+
+# # # def dominant_frequency(y, sr):
+# # #     """Cari frekuensi dominan dari sinyal"""
+# # #     fft = np.abs(np.fft.rfft(y))
+# # #     freqs = np.fft.rfftfreq(len(y), d=1/sr)
+# # #     return freqs[np.argmax(fft)]
+
+
+# # # def bandwidth_frequency(y, sr):
+# # #     """Estimasi bandwidth frekuensi"""
+# # #     S = np.abs(librosa.stft(y))
+# # #     freqs = librosa.fft_frequencies(sr=sr)
+# # #     centroid = np.sum(freqs[:, None] * S, axis=0) / np.sum(S, axis=0)
+# # #     return np.mean(centroid)
+
+
+# # # def analyze_class(folder_path):
+# # #     durations = []
+# # #     sample_lengths = []
+# # #     dom_freqs = []
+# # #     band_freqs = []
+# # #     rms_vals = []
+# # #     zcr_vals = []
+
+# # #     for file in os.listdir(folder_path):
+# # #         if not file.endswith(".wav"):
+# # #             continue
+
+# # #         path = os.path.join(folder_path, file)
+
+# # #         # Load raw audio
+# # #         y, sr = librosa.load(path, sr=SAMPLE_RATE)
+
+# # #         # Panjang audio
+# # #         durations.append(len(y) / sr)
+# # #         sample_lengths.append(len(y))
+
+# # #         # Frekuensi dominan
+# # #         dom_freqs.append(dominant_frequency(y, sr))
+
+# # #         # Bandwidth frekuensi
+# # #         band_freqs.append(bandwidth_frequency(y, sr))
+
+# # #         # RMS Energy
+# # #         rms_vals.append(np.mean(librosa.feature.rms(y=y)))
+
+# # #         # Zero Crossing Rate
+# # #         zcr_vals.append(np.mean(librosa.feature.zero_crossing_rate(y)))
+
+# # #     return {
+# # #         "duration_mean": np.mean(durations),
+# # #         "samples_mean": np.mean(sample_lengths),
+# # #         "dominant_freq_mean": np.mean(dom_freqs),
+# # #         "bandwidth_freq_mean": np.mean(band_freqs),
+# # #         "rms_mean": np.mean(rms_vals),
+# # #         "zcr_mean": np.mean(zcr_vals),
+# # #     }
+
+
+# # # def main():
+# # #     log("=== ANALISIS KARAKTERISTIK SINYAL RAW ===")
+
+# # #     results = []
+
+# # #     for class_name in os.listdir(TRAIN_DIR):
+# # #         class_path = os.path.join(TRAIN_DIR, class_name)
+
+# # #         if not os.path.isdir(class_path):
+# # #             continue
+
+# # #         log(f"Menganalisis kelas: {class_name}")
+# # #         stats = analyze_class(class_path)
+
+# # #         results.append({
+# # #             "Class": class_name,
+# # #             "Avg_Duration_sec": stats["duration_mean"],
+# # #             "Avg_Samples": stats["samples_mean"],
+# # #             "Avg_Dominant_Frequency_Hz": stats["dominant_freq_mean"],
+# # #             "Avg_Bandwidth_Frequency_Hz": stats["bandwidth_freq_mean"],
+# # #             "Avg_RMS_Energy": stats["rms_mean"],
+# # #             "Avg_ZCR": stats["zcr_mean"]
+# # #         })
+
+# # #     df = pd.DataFrame(results)
+
+# # #     print("\n=== RATA-RATA KARAKTERISTIK SINYAL RAW PER KELAS ===")
+# # #     print(df)
+
+# # #     os.makedirs("results", exist_ok=True)
+# # #     df.to_csv("results/raw_signal_characteristics.csv", index=False)
+
+# # #     log("Analisis selesai! Hasil disimpan ke results/raw_signal_characteristics.csv")
+
+
+# # # if __name__ == "__main__":
+# # #     main()
+
+# import os
+# import numpy as np
+# import pandas as pd
+# import librosa
+
+# # =========================
+# # PATH & CONFIG
+# # =========================
+# BASE_DATA_DIR = r"D:\Docs\FIX 1\TA Program\TA-Identifikasi-Batuk\data\b4split"
+# SAMPLE_RATE = 16000
+
+# # =========================
+# # ANALYZE ONE CLASS
+# # =========================
+# def analyze_class(folder_path):
+#     rms_vals = []
+
+#     mean_vals   = []
+#     std_vals    = []
+#     median_vals = []
+#     max_vals    = []
+#     min_vals    = []
+
+#     for file in os.listdir(folder_path):
+#         if not file.lower().endswith(".wav"):
+#             continue
+
+#         path = os.path.join(folder_path, file)
+
+#         # Load audio
+#         y, sr = librosa.load(path, sr=SAMPLE_RATE)
+#         y = librosa.util.normalize(y)
+
+#         # =========================
+#         # RMS
+#         # =========================
+#         rms = librosa.feature.rms(y=y)[0]
+#         rms_vals.append(np.mean(rms))
+
+#         # =========================
+#         # FIRST ORDER STATISTICS
+#         # =========================
+#         mean_vals.append(np.mean(y))
+#         std_vals.append(np.std(y))
+#         median_vals.append(np.median(y))
+#         max_vals.append(np.max(np.abs(y)))
+#         min_vals.append(np.min(y))
+
+#     return {
+#         "RMS_mean": np.mean(rms_vals),
+#         "RMS_std":  np.std(rms_vals),
+
+#         "Mean_mean":   np.mean(mean_vals),
+#         "Std_mean":    np.mean(std_vals),
+#         "Median_mean": np.mean(median_vals),
+#         "Max_mean":    np.mean(max_vals),
+#         "Min_mean":    np.mean(min_vals)
+#     }
+
+# # =========================
+# # MAIN
+# # =========================
+# def main():
+#     print("=== ANALISIS KARAKTERISTIK DATASET (RMS + STATISTIKA ORDO 1) ===")
+
+#     results = []
+
+#     for class_name in os.listdir(BASE_DATA_DIR):
+#         class_path = os.path.join(BASE_DATA_DIR, class_name)
+
+#         if not os.path.isdir(class_path):
+#             continue
+
+#         print(f"\nMenganalisis kelas: {class_name}")
+#         stats = analyze_class(class_path)
+
+#         row = {
+#             "Class": class_name,
+#             "RMS_mean": stats["RMS_mean"],
+#             "RMS_std": stats["RMS_std"],
+#             "Mean": stats["Mean_mean"],
+#             "Std": stats["Std_mean"],
+#             "Median": stats["Median_mean"],
+#             "Max": stats["Max_mean"],
+#             "Min": stats["Min_mean"]
+#         }
+
+#         results.append(row)
+
+#     df = pd.DataFrame(results)
+
+#     print("\n=== KARAKTERISTIK SETIAP KELAS ===")
+#     print(df)
+
+#     os.makedirs("results", exist_ok=True)
+#     df.to_csv("results/class_characteristics_rms_stat1.csv", index=False)
+
+#     print("\nHasil disimpan di: results/class_characteristics_rms_stat1.csv")
+
+# # =========================
+# # RUN
+# # =========================
+# if __name__ == "__main__":
+#     main()
